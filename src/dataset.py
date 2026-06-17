@@ -116,8 +116,8 @@ class DatasetScraper():
         self.current_path = Path(__file__).resolve()
         self.dataset_path = self.current_path.parent.parent/"dataset"
         os.makedirs(self.dataset_path, exist_ok=True)
-        if os.path.exists(self.dataset_path/"intervensions.csv"):
-            self.database = pd.read_csv(self.dataset_path/"database.csv",ignore_index=True)
+        if os.path.exists(self.dataset_path/"database.csv"):
+            self.database = pd.read_csv(self.dataset_path/"database.csv")
         else:
             self.database = pd.DataFrame()
         self.last_request_time = 0
@@ -162,6 +162,11 @@ class DatasetScraper():
     def resolve_mat_data(self, uri:str) -> str|None:
         raw_data_filename = self.dataset_path/"mat_files"/uri.split("/")[-1]
         if os.path.exists(raw_data_filename):
+            is_column_present = "mat_filename" in self.database.columns
+            is_database_updated = self.database[self.database["mat_url"] == uri]["mat_filename"].notna().values[0] if is_column_present else False
+            if not (is_column_present and is_database_updated):
+                self.database.loc[self.database["mat_url"]== uri,"mat_filename"] = raw_data_filename
+                self.database.to_csv(self.dataset_path/"database.csv", index=False)
             return raw_data_filename
 
         response = self._rate_limited_request(uri)
