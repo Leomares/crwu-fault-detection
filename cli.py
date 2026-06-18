@@ -1,4 +1,4 @@
-from src.dataset import DatasetScraper
+from src.scraper import DatasetScraper
 import argparse
 
 
