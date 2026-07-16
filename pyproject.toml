@@ -9,7 +9,9 @@ dependencies = [
     "numpy>=2.4.6",
     "pandas>=3.0.3",
     "requests>=2.34.2",
+    "scikit-learn>=1.9.0",
     "scipy>=1.17.1",
     "statsmodels>=0.14.6",
     "tqdm>=4.68.1",
+    "xgboost>=3.3.0",
 ]
