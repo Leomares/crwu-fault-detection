@@ -3,6 +3,8 @@ import numpy as np
 import pandas as pd
 from collections import defaultdict
 
+from scipy.stats import kurtosis
+
 from tqdm import tqdm
 from pathlib import Path
 from dataclasses import dataclass
@@ -123,6 +125,25 @@ class _Dataset:
             mask = (freqs > 2_000) & (freqs < 5_000)
             rate = fft_power[mask].sum() / fft_power.sum() if fft_power.sum() > 0 else 0
             features["narrowband_power_rate"].append(rate)
+
+            #most relevant binned frequency components
+            n_bins = 10
+            binned_freqs = np.array_split(freqs, n_bins)
+            binned_fft_power = np.array_split(fft_power, n_bins)
+            summed_binned_fft_power = [bp.sum() for bp in binned_fft_power]
+            most_relevant_binned_freq = binned_freqs[np.argmax(summed_binned_fft_power)].mean() if fft_power.sum() > 0 else 0
+            features["most_relevant_binned_freq"].append(most_relevant_binned_freq)
+            features["most_relevant_binned_power"].append(np.max(summed_binned_fft_power))
+            for i, bp in enumerate(summed_binned_fft_power):
+                features[f"binned_fft_power_bin_{i}"].append(np.sum(bp)/fft_power.sum() if fft_power.sum() > 0 else 0)
+
+            #most relevant frequency component
+            dominant_freq = freqs[np.argmax(fft_power)] if fft_power.sum() > 0 else 0
+            features["dominant_freq"].append(dominant_freq)
+
+            #kurtosis
+            k = kurtosis(window,fisher=False)
+            features["kurtosis"].append(k)
 
         return pd.DataFrame(features)
 
