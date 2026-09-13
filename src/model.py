@@ -10,7 +10,6 @@ class Preprocessor(BaseEstimator, TransformerMixin):
         self.categorical_cols = categorical_cols
 
         self.log_cols = [
-            # "fault_size_in",
             "kurtosis",
             "feat_avg_power",
             "feat_narrowband_power_rate",

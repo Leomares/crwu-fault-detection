@@ -91,12 +91,12 @@ class _Dataset:
                 dataset_index = pd.DataFrame([dataset_index.__dict__])
                 features = self._compute_features(pd.Series(ts), sampling_rate, time_per_datapoint_s)
                 features = features.add_prefix("feat_")
-                cols = features.copy()
+                features_indexed = features.copy()
                 for col in dataset_index.columns:
-                    cols[col] = dataset_index[col].iloc[0]
-                # cols = pd.concat([dataset_index,features], axis=1)
-                # print(f"[DEBUG] Size check: {dataset_index.shape} + {features.shape} = {cols.shape}")
-                df = pd.concat([df, cols], ignore_index=True)
+                    features_indexed[col] = dataset_index[col].iloc[0]
+                # features_indexed = pd.concat([dataset_index,features], axis=1)
+                # print(f"[DEBUG] Size check: {dataset_index.shape} + {features.shape} = {features_indexed.shape}")
+                df = pd.concat([df, features_indexed], ignore_index=True)
                 # print(f"[DEBUG] Processed {col} from {mat_filename}. Current dataset size: {df.shape}")
         
         self.data = df
