@@ -1,13 +1,14 @@
 import os
+from collections import defaultdict
+from collections.abc import Iterator
+from dataclasses import dataclass
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
-from collections import defaultdict
-
 from scipy.stats import kurtosis
-
 from tqdm import tqdm
-from pathlib import Path
-from dataclasses import dataclass
+
 from .utils import get_dataframe_from_mat
 
 
@@ -153,7 +154,7 @@ class Dataloader:
     Class that manages the creation and yielding of batches of data used in training/inference.
     """
    
-    def __init__(self, user_config: dict = {}):
+    def __init__(self, user_config: dict = DEFAULT_DATASET_CONFIG):
         # self.data:pd.DataFrame = None
         self.config = DEFAULT_DATASET_CONFIG | user_config
         self.dataset = _Dataset()
@@ -167,7 +168,7 @@ class Dataloader:
         return curr_data
 
 
-    def get_batch(self, batch_size: int, randomize:bool=True) -> pd.DataFrame:
+    def get_batch(self, batch_size: int, randomize:bool=True) -> Iterator[pd.DataFrame]:
         curr_data = self.dataset.get_dataset(self.config["time_per_datapoint_s"])
         if "filters" in self.config:
            for col, values in self.config["filters"]:
